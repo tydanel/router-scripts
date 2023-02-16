@@ -1,4 +1,4 @@
 #!/bin/bash
 
 
-ssh -i $HOME/.ssh/id_rsa.pub tyrell@10.20.0.1 /system/script/run disable-kids-filter-rules 
+ssh -i $HOME/.ssh/id_rsa tyrell@router.lan /system/script/run disable-kids-filter-rules 
