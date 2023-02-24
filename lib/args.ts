@@ -37,10 +37,10 @@ class ArgList {
         return value;
     }
     public hasFlag(name: string): boolean {
-      return this.getFlag(name) !== undefined;
+      return this.getFlag(name) !== null;
     }
   
-    public getFlag(name: string): boolean | undefined {
+    public getFlag(name: string): boolean {
       if (this.cached.has(name)) {
         return this.cached.get(name) === true;
       }
@@ -54,20 +54,20 @@ class ArgList {
         }
       }
       this.cached.set(name, false);
-      return undefined;
+      return false;
     }
   
     public hasOpt(name: string): boolean {
-      return this.getOpt(name) !== undefined;
+      return this.getOpt(name) !== null;
     }
   
-    public getOpt(name: string): string | undefined {
+    public getOpt(name: string): string | null {
       if (this.cached.has(name)) {
         const value = this.cached.get(name);
         if (typeof value === "string") {
           return value;
         } else {
-          return undefined;
+          return null;
         }
       }
   
@@ -81,7 +81,7 @@ class ArgList {
         }
       }
   
-      return undefined;
+      return null;
     }
   }
 // class ArgList {
@@ -94,10 +94,10 @@ class ArgList {
 //     }
   
 //     public hasFlag(name: string): boolean {
-//       return this.getFlag(name) !== undefined;
+//       return this.getFlag(name) !== null;
 //     }
   
-//     public getFlag(name: string): boolean | undefined {
+//     public getFlag(name: string): boolean | null {
 //       if (this.cached.has(name)) {
 //         return this.cached.get(name) === true;
 //       }
@@ -110,24 +110,24 @@ class ArgList {
 //         }
 //       }
 //       this.cached.set(name, false);
-//       return undefined;
+//       return null;
 //     }
   
 //     public hasOpt(name: string): boolean {
-//       return this.getOpt(name) !== undefined;
+//       return this.getOpt(name) !== null;
 //     }
     
 //     public getAction() : string | null {
 //         return this.raw[0] || null;
 //     }
 
-//     public getOpt(name: string): string | undefined {
+//     public getOpt(name: string): string | null {
 //       if (this.cached.has(name)) {
 //         const value = this.cached.get(name);
 //         if (typeof value === "string") {
 //           return value;
 //         } else {
-//           return undefined;
+//           return null;
 //         }
 //       }
   
@@ -140,7 +140,7 @@ class ArgList {
 //         }
 //       }
   
-//       return undefined;
+//       return null;
 //     }
 //   }
   
