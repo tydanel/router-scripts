@@ -1,7 +1,8 @@
+import * as dotenv from 'dotenv';;
 import createLogger from "./lib/logger";
 import argv from './lib/args';
-// import Ejs from 'ejs';
-
+import { SshCommand } from './lib/runner';
+dotenv.config();
 
 
 
@@ -32,18 +33,30 @@ async function doAddUser() {
 }
 
 
+async function doRunScript() {
+  const script = argv.getOpt('script');  
+  const command = new SshCommand(`/system/script/run ${script}`);
+  await command.execute();
+}
+
 
 (async function main () {
-
-  switch ( argv.getAction() )
-  {
-    case 'create-cpe-config': {
-      return doAddUser();
-    };
-
-    default: {
-      throw new Error('unknown action ' + argv.getAction());
+  try {
+    switch ( argv.getAction() )
+    {
+      case 'create-cpe-config': {
+        return doAddUser();
+      };
+      case 'run-script': {
+        return doRunScript();
+      };
+      default: {
+        throw new Error('unknown action ' + argv.getAction());
+      }
     }
+  } catch (error) {
+    logError('main', error);
+    process.exit(44);
   }
 
 })();
