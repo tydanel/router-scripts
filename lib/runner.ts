@@ -1,7 +1,6 @@
 import { exec, ExecOptions, ChildProcess } from "child_process";
-import argv from './args';
 
-export class SshCommand {
+export default class SshCommand {
   private sshCommand: string;
   private command: string;
   private options?: ExecOptions;

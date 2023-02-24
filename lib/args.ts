@@ -7,26 +7,19 @@ class ArgList {
     }
 
     constructor(args: string[]) {
-      this.raw = args.slice();
-      this.cached = new Map();
+        this.raw = args.slice();
+        this.cached = new Map();
     }
-  
-    private removeCachedKeys(): void {
-      for (const key of this.cached.keys()) {
-        if (!this.hasFlag(key) && !this.hasOpt(key)) {
-          this.cached.delete(key);
-        }
-      }
-    }
+
     public getAction() : string | null {
         if (this.cached.has('action')) {
             const value = this.cached.get('action');
             if (typeof value === "string") {
-              return value;
+                return value;
             } else {
-              return null;
+                return null;
             }
-          }
+        }
         
         const value = this.raw[0] || null;
         if ( !value ) {
@@ -37,115 +30,52 @@ class ArgList {
         return value;
     }
     public hasFlag(name: string): boolean {
-      return this.getFlag(name) !== null;
+        return this.getFlag(name) !== null;
     }
-  
+
     public getFlag(name: string): boolean {
-      if (this.cached.has(name)) {
+        if (this.cached.has(name)) {
         return this.cached.get(name) === true;
-      }
-  
-      const fullName = `--${name}`;
-      for (let idx = 0; idx < this.raw.length; idx++) {
+        }
+
+        const fullName = `--${name}`;
+        for (let idx = 0; idx < this.raw.length; idx++) {
         if (this.raw[idx] === fullName) {
-          this.cached.set(name, true);
-          this.raw.splice(idx, 1);
-          return true;
+            this.cached.set(name, true);
+            this.raw.splice(idx, 1);
+            return true;
         }
-      }
-      this.cached.set(name, false);
-      return false;
+        }
+        this.cached.set(name, false);
+        return false;
     }
-  
+
     public hasOpt(name: string): boolean {
-      return this.getOpt(name) !== null;
+        return this.getOpt(name) !== null;
     }
-  
+
     public getOpt(name: string): string | null {
-      if (this.cached.has(name)) {
-        const value = this.cached.get(name);
-        if (typeof value === "string") {
-          return value;
-        } else {
-          return null;
+        if (this.cached.has(name)) {
+            const value = this.cached.get(name);
+            if (typeof value === "string") {
+                return value;
+            } else {
+                return null;
+            }
         }
-      }
-  
-      const fullName = `--${name}=`;
-      for (let idx = 0; idx < this.raw.length; idx++) {
-        if (this.raw[idx].startsWith(fullName)) {
-          const value = this.raw[idx].substring(fullName.length);
-          this.cached.set(name, value);
-          this.raw.splice(idx, 1);
-          return value;
+
+        const fullName = `--${name}=`;
+        for (let idx = 0; idx < this.raw.length; idx++) {
+            if (this.raw[idx].startsWith(fullName)) {
+                const value = this.raw[idx].substring(fullName.length);
+                this.cached.set(name, value);
+                this.raw.splice(idx, 1);
+                return value;
+            }
         }
-      }
-  
-      return null;
+
+        return null;
     }
-  }
-// class ArgList {
-//     private readonly cached: Map<string, string | boolean>;
-//     private readonly raw: readonly string[];
-  
-//     constructor(args: readonly string[]) {
-//       this.raw = args;
-//       this.cached = new Map();
-//     }
-  
-//     public hasFlag(name: string): boolean {
-//       return this.getFlag(name) !== null;
-//     }
-  
-//     public getFlag(name: string): boolean | null {
-//       if (this.cached.has(name)) {
-//         return this.cached.get(name) === true;
-//       }
-  
-//       const fullName = `--${name}`;
-//       for (let idx = 0; idx < this.raw.length; idx++) {
-//         if (this.raw[idx] === fullName) {
-//           this.cached.set(name, true);
-//           return true;
-//         }
-//       }
-//       this.cached.set(name, false);
-//       return null;
-//     }
-  
-//     public hasOpt(name: string): boolean {
-//       return this.getOpt(name) !== null;
-//     }
-    
-//     public getAction() : string | null {
-//         return this.raw[0] || null;
-//     }
+}
 
-//     public getOpt(name: string): string | null {
-//       if (this.cached.has(name)) {
-//         const value = this.cached.get(name);
-//         if (typeof value === "string") {
-//           return value;
-//         } else {
-//           return null;
-//         }
-//       }
-  
-//       const fullName = `--${name}=`;
-//       for (let idx = 0; idx < this.raw.length; idx++) {
-//         if (this.raw[idx].startsWith(fullName)) {
-//           const value = this.raw[idx].substring(fullName.length);
-//           this.cached.set(name, value);
-//           return value;
-//         }
-//       }
-  
-//       return null;
-//     }
-//   }
-  
-
-const argList = new ArgList(process.argv.slice(2));
-
-
-export default argList;
+export default new ArgList(process.argv.slice(2));;

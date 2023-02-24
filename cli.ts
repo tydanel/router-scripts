@@ -1,7 +1,7 @@
 import * as dotenv from 'dotenv';;
+import SshCommand from './lib/runner';
 import createLogger from "./lib/logger";
 import argv from './lib/args';
-import { SshCommand } from './lib/runner';
 dotenv.config();
 
 
@@ -11,27 +11,23 @@ const logWarn  = createLogger('warn', 'cli');
 const logError = createLogger('error', 'cli');
 
 
-
-async function doAddUser() {
-  
-  const shouldRandomizeMissing = argv.getFlag('randomize');
-  const username = argv.getOpt('username');
-  const password = argv.getOpt('password');
-  const vendor = argv.getOpt('vendor');
-
-  if ( vendor === 'mikrotik' ) {
-
-    log('doAddUser', argv.getRaw());
-
-  }
-  else {
-    throw new Error('Unknown Vendor');
-  }
-
-
-  log('doAddUser', `Created user: ${username}:${password}`);
+interface ArgumentProvider {
+  getOpt: (name: string) => string | null,
+  getFlag: (name: string) => boolean
 }
 
+
+function makeCreateCpeConfigFn( opts : ArgumentProvider ) {
+  return function doCreasteCpeConfig() {
+
+    const username = opts.getOpt('username');
+    const password = opts.getOpt('password');
+
+    log('doCreateCpeConfig', { username, password });
+  }
+}
+
+const doCreateCpeConfig = makeCreateCpeConfigFn(argv);
 
 async function doRunScript() {
   const script = argv.getOpt('script');  
@@ -45,7 +41,7 @@ async function doRunScript() {
     switch ( argv.getAction() )
     {
       case 'create-cpe-config': {
-        return doAddUser();
+        return doCreateCpeConfig();
       };
       case 'run-script': {
         return doRunScript();
