@@ -1,0 +1,151 @@
+class ArgList {
+    private readonly cached: Map<string, string | boolean>;
+    private readonly raw: string[];
+
+    public getRaw() {
+        return this.raw;
+    }
+
+    constructor(args: string[]) {
+      this.raw = args.slice();
+      this.cached = new Map();
+    }
+  
+    private removeCachedKeys(): void {
+      for (const key of this.cached.keys()) {
+        if (!this.hasFlag(key) && !this.hasOpt(key)) {
+          this.cached.delete(key);
+        }
+      }
+    }
+    public getAction() : string | null {
+        if (this.cached.has('action')) {
+            const value = this.cached.get('action');
+            if (typeof value === "string") {
+              return value;
+            } else {
+              return null;
+            }
+          }
+        
+        const value = this.raw[0] || null;
+        if ( !value ) {
+            return null;
+        }
+        this.cached.set('action', value);
+        this.raw.splice(0, 1);
+        return value;
+    }
+    public hasFlag(name: string): boolean {
+      return this.getFlag(name) !== undefined;
+    }
+  
+    public getFlag(name: string): boolean | undefined {
+      if (this.cached.has(name)) {
+        return this.cached.get(name) === true;
+      }
+  
+      const fullName = `--${name}`;
+      for (let idx = 0; idx < this.raw.length; idx++) {
+        if (this.raw[idx] === fullName) {
+          this.cached.set(name, true);
+          this.raw.splice(idx, 1);
+          return true;
+        }
+      }
+      this.cached.set(name, false);
+      return undefined;
+    }
+  
+    public hasOpt(name: string): boolean {
+      return this.getOpt(name) !== undefined;
+    }
+  
+    public getOpt(name: string): string | undefined {
+      if (this.cached.has(name)) {
+        const value = this.cached.get(name);
+        if (typeof value === "string") {
+          return value;
+        } else {
+          return undefined;
+        }
+      }
+  
+      const fullName = `--${name}=`;
+      for (let idx = 0; idx < this.raw.length; idx++) {
+        if (this.raw[idx].startsWith(fullName)) {
+          const value = this.raw[idx].substring(fullName.length);
+          this.cached.set(name, value);
+          this.raw.splice(idx, 1);
+          return value;
+        }
+      }
+  
+      return undefined;
+    }
+  }
+// class ArgList {
+//     private readonly cached: Map<string, string | boolean>;
+//     private readonly raw: readonly string[];
+  
+//     constructor(args: readonly string[]) {
+//       this.raw = args;
+//       this.cached = new Map();
+//     }
+  
+//     public hasFlag(name: string): boolean {
+//       return this.getFlag(name) !== undefined;
+//     }
+  
+//     public getFlag(name: string): boolean | undefined {
+//       if (this.cached.has(name)) {
+//         return this.cached.get(name) === true;
+//       }
+  
+//       const fullName = `--${name}`;
+//       for (let idx = 0; idx < this.raw.length; idx++) {
+//         if (this.raw[idx] === fullName) {
+//           this.cached.set(name, true);
+//           return true;
+//         }
+//       }
+//       this.cached.set(name, false);
+//       return undefined;
+//     }
+  
+//     public hasOpt(name: string): boolean {
+//       return this.getOpt(name) !== undefined;
+//     }
+    
+//     public getAction() : string | null {
+//         return this.raw[0] || null;
+//     }
+
+//     public getOpt(name: string): string | undefined {
+//       if (this.cached.has(name)) {
+//         const value = this.cached.get(name);
+//         if (typeof value === "string") {
+//           return value;
+//         } else {
+//           return undefined;
+//         }
+//       }
+  
+//       const fullName = `--${name}=`;
+//       for (let idx = 0; idx < this.raw.length; idx++) {
+//         if (this.raw[idx].startsWith(fullName)) {
+//           const value = this.raw[idx].substring(fullName.length);
+//           this.cached.set(name, value);
+//           return value;
+//         }
+//       }
+  
+//       return undefined;
+//     }
+//   }
+  
+
+const argList = new ArgList(process.argv.slice(2));
+
+
+export default argList;
